@@ -37,10 +37,10 @@ impl EventTypeRegistry for EventTypeRegistryImpl {
     fn has_event_type_key_been_registered(&self, key: &String) -> bool {
         for registered_type in self.registered_event_types.iter() {
             if registered_type.key == *key {
-                return false;
+                return true;
             }
         }
     
-        true
+        false
     }
 }
