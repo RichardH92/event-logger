@@ -8,3 +8,4 @@ pub struct EventType {
     pub allowed_params: Vec<ParamType>, 
     pub inverse_type: Option<String> 
 }
+
