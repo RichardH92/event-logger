@@ -10,6 +10,8 @@ pub type AllowedParams = [ParamKey; MAX_NUM_PARAMS];
 pub type Param = (ParamKey, ParamValue);
 pub type Params = [Param; MAX_NUM_PARAMS];
 
+#[derive(Debug)]
+#[derive(PartialEq)]
 pub struct PersistenceEvent {
     pub event_type_key: EventTypeKey, 
     pub params: Params 
