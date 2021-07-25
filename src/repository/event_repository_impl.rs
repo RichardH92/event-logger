@@ -22,7 +22,8 @@ impl EventRepository for EventRepositoryImpl {
     }*/
 
     fn get_events(&self, limit: usize, offset: usize) -> Vec<Event> {
-        vec![]
+        let ret : Vec<Event> = Vec::new();
+
     }
 
     fn append_event(&mut self, event: Event) -> std::io::Result<()> {
