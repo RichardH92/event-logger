@@ -52,34 +52,63 @@ pub fn domain_to_persistence_event(event: Event) -> PersistenceEvent {
     }
 }
 
-fn strip_padding(mut padded_string: String) {
+fn strip_padding(mut padded_string: String) -> String {
+    let char_vec : Vec<char> = padded_string.chars().collect();
     for i in 0..padded_string.len() {
-        if padded_string[padded_string.len() - i] == PAD_CHAR {
+
+        if char_vec[padded_string.len() - i - 1] == PAD_CHAR {
             padded_string.pop();
         } else {
             break;
         }
     }
+
+    padded_string.clone()
 }
 
 pub fn persistence_to_domain_event(persistence_event: PersistenceEvent) -> Event {
-   let mut params : HashMap<String, String> = HashMap::new();
-   let mut event_type_key : String = String::new();
+    let mut event_type_key : String = persistence_event.event_type_key.iter().collect();
+    event_type_key = strip_padding(event_type_key);
 
-   for p in persistence_event.params {
+    let mut params : HashMap<String, String> = HashMap::new();
+
+    for p in persistence_event.params {
         if p != DEFAULT_PARAM {
-            // get string from char array
-            // strip padding
-            // for both key and value of param
-            // insert into map
-        }
-   }
+            let mut param_key_str : String = p.0.iter().collect();
+            let mut param_val_str : String = p.1.iter().collect();
 
-   Event {
+            param_key_str = strip_padding(param_key_str);
+            param_val_str = strip_padding(param_val_str);
+
+            params.insert(param_key_str, param_val_str);
+        }
+    }
+
+    Event {
         event_type_key: event_type_key,
         params: params
-   }
+    }
 }
 
+#[cfg(test)]
+mod repo_mapper_test {
+    use super::*;
 
+    #[test]
+    fn test_map_happy_path() {
+        let mut params : HashMap<String, String> = HashMap::new();
+        params.insert("id".to_string(), "test123".to_string());
+
+        let event = Event {
+            event_type_key: "upsert-entity".to_string(),
+            params: params
+        };
+
+        let expected_event = event.clone();
+        let p_event = domain_to_persistence_event(event);
+        let actual_event = persistence_to_domain_event(p_event);
+
+        assert_eq!(expected_event, actual_event);
+    }
+}
 

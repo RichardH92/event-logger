@@ -1,7 +1,7 @@
-const MAX_EVENT_TYPE_KEY_SIZE: usize = 20;
-const MAX_PARAM_KEY_SIZE: usize = 20;
-const MAX_PARAM_VALUE_SIZE: usize = 120;
-const MAX_NUM_PARAMS: usize = 5;
+pub const MAX_EVENT_TYPE_KEY_SIZE: usize = 20;
+pub const MAX_PARAM_KEY_SIZE: usize = 20;
+pub const MAX_PARAM_VALUE_SIZE: usize = 120;
+pub const MAX_NUM_PARAMS: usize = 5;
 
 pub type ParamKey = [char; MAX_PARAM_KEY_SIZE];
 pub type EventTypeKey = [char; MAX_EVENT_TYPE_KEY_SIZE];
