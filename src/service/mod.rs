@@ -38,6 +38,8 @@ mod registry_tests {
     use crate::service::RegisterEventTypeValidationErrorType::{KeyAlreadyTaken, DuplicateKey};
     use crate::service::RegisterEventTypeValidationError;
 
+    // TODO: Add validation + test that param keys must be unique
+
     #[test]
     fn test_register_event_types_happy_path() {
         let mut registry : EventTypeRegistryImpl = EventTypeRegistry::new();
