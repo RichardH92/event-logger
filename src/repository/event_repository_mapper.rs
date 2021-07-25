@@ -15,6 +15,29 @@ const DEFAULT_EVENT_TYPE_KEY : EventTypeKey = [PAD_CHAR; MAX_EVENT_TYPE_KEY_SIZE
 const DEFAULT_PARAM : Param = ([PAD_CHAR; MAX_PARAM_KEY_SIZE], [PAD_CHAR; MAX_PARAM_VALUE_SIZE]);
 const DEFAULT_PARAMS : Params = [DEFAULT_PARAM; MAX_NUM_PARAMS];
 
+pub fn merge_all_strings(persistence_event: PersistenceEvent) -> [char; MAX_EVENT_SIZE] {
+    let mut ret = [PAD_CHAR; MAX_EVENT_SIZE];
+    let mut i = 0;
+
+    for j in 0..MAX_EVENT_TYPE_KEY_SIZE {
+        ret[i] = persistence_event.event_type_key[j];
+        i = i + 1;
+    }
+
+    for k in 0..MAX_NUM_PARAMS {
+        for j in 0..MAX_PARAM_KEY_SIZE {
+            ret[i] = persistence_event.params[k].0[j];
+            i = i + 1;
+        }
+
+        for j in 0..MAX_PARAM_VALUE_SIZE {
+            ret[i] = persistence_event.params[k].1[j];
+            i = i + 1;
+        }
+    }
+
+    ret
+}
 
 pub fn domain_to_persistence_event(event: Event) -> PersistenceEvent {
 
