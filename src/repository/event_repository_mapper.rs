@@ -55,7 +55,7 @@ fn strip_padding(mut padded_string: String) -> String {
     let char_vec : Vec<char> = padded_string.chars().collect();
     for i in 0..padded_string.len() {
 
-        if char_vec[padded_string.len() - i - 1] == PAD_CHAR {
+        if char_vec[padded_string.len() - 1] == PAD_CHAR {
             padded_string.pop();
         } else {
             break;
@@ -141,7 +141,7 @@ mod repo_mapper_test {
     }
 
     #[test]
-    fn test_map_happy_path() {
+    fn test_persistence_to_domain_happy_path() {
         let mut params : HashMap<String, String> = HashMap::new();
         params.insert("id".to_string(), "test123".to_string());
 
@@ -150,8 +150,46 @@ mod repo_mapper_test {
             params: params
         };
 
-        let expected_event = event.clone();
-        let p_event = domain_to_persistence_event(event);
+        let mut p_params = DEFAULT_PARAMS;
+        p_params[0].0[0] = 'i';
+        p_params[0].0[1] = 'd';
+        
+        p_params[0].1[0] = 't';
+        p_params[0].1[1] = 'e';
+        p_params[0].1[2] = 's';
+        p_params[0].1[3] = 't';
+        p_params[0].1[4] = '1';
+        p_params[0].1[5] = '2';
+        p_params[0].1[6] = '3';
+
+        let mut p_event_type = DEFAULT_EVENT_TYPE_KEY;
+        p_event_type[0] = 'u';
+        p_event_type[1] = 'p';
+        p_event_type[2] = 's';
+        p_event_type[3] = 'e';
+        p_event_type[4] = 'r';
+        p_event_type[5] = 't';
+        p_event_type[6] = '-';
+        p_event_type[7] = 'e';
+        p_event_type[8] = 'n';
+        p_event_type[9] = 't';
+        p_event_type[10] = 'i';
+        p_event_type[11] = 't';
+        p_event_type[12] = 'y';
+
+        let p_event = PersistenceEvent {
+            event_type_key: p_event_type,
+            params: p_params
+        };
+
+        let mut params : HashMap<String, String> = HashMap::new();
+        params.insert("id".to_string(), "test123".to_string());
+
+        let expected_event = Event {
+            event_type_key: "upsert-entity".to_string(),
+            params: params
+        };
+
         let actual_event = persistence_to_domain_event(p_event);
 
         assert_eq!(expected_event, actual_event);
