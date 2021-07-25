@@ -65,7 +65,7 @@ mod registry_tests {
         
         let e3 = EventType { key: "remove-entity".to_string(), allowed_params: vec!["id".to_string()], inverse_type: None };
         let e4 = EventType { key: "upsert-entity".to_string(), allowed_params: vec![], inverse_type: Some("remove-entity".to_string()) };
-
+        
         let result = registry.register_event_types(vec![e3, e4]);
    
         let expected_errs = Err(vec![RegisterEventTypeValidationError{ event_type_key: "upsert-entity".to_string(), error_type: KeyAlreadyTaken }]);
