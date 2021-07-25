@@ -4,13 +4,13 @@ use std::fs::OpenOptions;
 use std::fs::File;
 
 pub struct EventRepositoryImpl {
-    file: File
+    // file: File
 }
 
 impl EventRepository for EventRepositoryImpl {
-    fn new(file: mut File) -> EventRepositoryImpl {
+    fn new(/*file: mut File*/) -> EventRepositoryImpl {
         EventRepositoryImpl {
-            file: file
+            //file: file
         }
     }
 
@@ -19,9 +19,9 @@ impl EventRepository for EventRepositoryImpl {
     }
 
     fn append_events(events: Vec<Event>) -> Result<(), ()> {
-        if let Err(e) = writeln!(file, "A new line!") {
+        /*if let Err(e) = writeln!(file, "A new line!") {
             eprintln!("Couldn't write to file: {}", e);
-        }
+        }*/
 
         Ok(())
     }
