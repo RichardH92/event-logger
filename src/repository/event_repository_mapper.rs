@@ -170,6 +170,52 @@ mod repo_mapper_test {
     use super::*;
 
     #[test]
+    fn test_str_to_persistence_happy_path() {
+        let default_param_str = "*******************************************************************************************************************************************";
+        let event_type_key_str = "upsert-entity*******"; 
+        let param_key_str = "id******************"; 
+        let param_val_str = "test123*****************************************************************************************************************";
+        let event_str = event_type_key_str.to_string() + param_key_str + param_val_str + default_param_str + default_param_str + default_param_str + default_param_str;
+
+        let mut expected_p_params = DEFAULT_PARAMS;
+        expected_p_params[0].0[0] = 'i';
+        expected_p_params[0].0[1] = 'd';
+        
+        expected_p_params[0].1[0] = 't';
+        expected_p_params[0].1[1] = 'e';
+        expected_p_params[0].1[2] = 's';
+        expected_p_params[0].1[3] = 't';
+        expected_p_params[0].1[4] = '1';
+        expected_p_params[0].1[5] = '2';
+        expected_p_params[0].1[6] = '3';
+
+        let mut expected_p_event_type = DEFAULT_EVENT_TYPE_KEY;
+        expected_p_event_type[0] = 'u';
+        expected_p_event_type[1] = 'p';
+        expected_p_event_type[2] = 's';
+        expected_p_event_type[3] = 'e';
+        expected_p_event_type[4] = 'r';
+        expected_p_event_type[5] = 't';
+        expected_p_event_type[6] = '-';
+        expected_p_event_type[7] = 'e';
+        expected_p_event_type[8] = 'n';
+        expected_p_event_type[9] = 't';
+        expected_p_event_type[10] = 'i';
+        expected_p_event_type[11] = 't';
+        expected_p_event_type[12] = 'y';
+
+        let expected_p_event = PersistenceEvent {
+            event_type_key: expected_p_event_type,
+            params: expected_p_params
+        };
+
+        let actual_p_event = str_to_persistence_event(&event_str);
+
+        assert_eq!(expected_p_event, actual_p_event);
+       
+    }
+    
+    #[test]
     fn test_domain_to_persistence_happy_path() {
         let mut params : HashMap<String, String> = HashMap::new();
         params.insert("id".to_string(), "test123".to_string());
