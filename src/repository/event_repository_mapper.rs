@@ -47,25 +47,20 @@ pub fn str_to_persistence_event(event_str: &str) -> PersistenceEvent {
 
 pub fn split_into_event_strs(total_str: &str) -> Vec<&str> {
 
-    let indices_to_split_at : Vec<usize> = total_str.char_indices()
-        .map(|c| c.0)
-        .filter(|idx| idx % MAX_EVENT_SIZE == 0)
-        .collect();
+    let mut subs = Vec::with_capacity(total_str.len() / MAX_EVENT_SIZE);
+    let mut iter = total_str.chars();
+    let mut pos = 0;
 
-    let mut event_strs : Vec<&str> = vec![];
-    let remaining_str = total_str;
-
-    for idx in indices_to_split_at {
-        let (event_str, remaining_total_str) = remaining_str.split_at(idx);
-        
-        if event_str.len() == 0 {
-            break;
+    while pos < total_str.len() {
+        let mut len = 0;
+        for ch in iter.by_ref().take(MAX_EVENT_SIZE) {
+            len += ch.len_utf8();
         }
-
-        event_strs.push(event_str);
+        subs.push(&total_str[pos..pos + len]);
+        pos += len;
     }
-
-    event_strs
+    
+    subs
 }
 
 pub fn merge_all_strings(persistence_event: PersistenceEvent) -> [char; MAX_EVENT_SIZE] {
@@ -168,6 +163,27 @@ pub fn persistence_to_domain_event(persistence_event: PersistenceEvent) -> Event
 #[cfg(test)]
 mod repo_mapper_test {
     use super::*;
+
+    #[test]
+    fn test_split_into_event_strs() {
+        let default_param_str = "********************************************************************************************************************************************";
+        
+        let event_type_key_str_1 = "upsert-entity*******"; 
+        let param_key_str_1 = "id******************"; 
+        let param_val_str_1 = "test123*****************************************************************************************************************";
+        let event_str_1 = event_type_key_str_1.to_string() + param_key_str_1 + param_val_str_1 + default_param_str + default_param_str + default_param_str + default_param_str;
+
+        let event_type_key_str_2 = "remove-entity*******"; 
+        let param_key_str_2 = "key*****************"; 
+        let param_val_str_2 = "test12345***************************************************************************************************************";
+        let event_str_2 = event_type_key_str_2.to_string() + param_key_str_2 + param_val_str_2 + default_param_str + default_param_str + default_param_str + default_param_str;
+
+        let total_str = event_str_1.clone() + &event_str_2;
+
+        let split_strs : Vec<&str> = split_into_event_strs(&total_str);
+
+        assert_eq!(event_str_1, split_strs[0]);
+    }
 
     #[test]
     fn test_str_to_persistence_happy_path() {
