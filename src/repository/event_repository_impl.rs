@@ -2,7 +2,8 @@ use crate::domain::event::Event;
 use crate::repository::EventRepository;
 use std::fs::OpenOptions;
 use std::fs::File;
-use crate::repository::event_repository_mapper::{merge_all_strings, domain_to_persistence_event};
+use crate::repository::event_repository_mapper::{merge_all_strings, domain_to_persistence_event, split_into_event_strs};
+use crate::repository::event_repository_mapper::{persistence_to_domain_event, str_to_persistence_event};
 use std::io::prelude::*;
 use crate::repository::event_repository_mapper::MAX_EVENT_SIZE;
 use std::mem;
@@ -29,21 +30,13 @@ impl EventRepository for EventRepositoryImpl {
         self.file.read_exact(&mut buffer)?;
 
         let mut total_str = str::from_utf8(&buffer).unwrap();
-
-        let indices_to_split_at : Vec<usize> = total_str.char_indices()
-            .map(|c| c.0)
-            .filter(|idx| idx % MAX_EVENT_SIZE == 0)
+        
+        let domain_events : Vec<Event> = split_into_event_strs(total_str).iter()
+            .map(|event_str| str_to_persistence_event(event_str))
+            .map(|p_event| persistence_to_domain_event(p_event))
             .collect();
 
-        let mut event_strs : Vec<&str> = vec![];
-
-        for idx in indices_to_split_at {
-            let (event_str, remaining_total_str) = total_str.split_at(idx);
-            total_str = remaining_total_str;
-            event_strs.push(event_str);
-        }
-
-        Ok(vec![])
+        Ok(domain_events)
     }
 
     fn append_event(&mut self, event: Event) -> std::io::Result<()> {

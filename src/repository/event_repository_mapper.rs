@@ -15,6 +15,54 @@ pub const DEFAULT_EVENT_TYPE_KEY : EventTypeKey = [PAD_CHAR; MAX_EVENT_TYPE_KEY_
 pub const DEFAULT_PARAM : Param = ([PAD_CHAR; MAX_PARAM_KEY_SIZE], [PAD_CHAR; MAX_PARAM_VALUE_SIZE]);
 pub const DEFAULT_PARAMS : Params = [DEFAULT_PARAM; MAX_NUM_PARAMS];
 
+
+pub fn str_to_persistence_event(event_str: &str) -> PersistenceEvent {
+
+    let event_str_chars : Vec<char> = event_str.chars().collect();
+
+    let mut event_type_key = DEFAULT_EVENT_TYPE_KEY;
+    for j in 0..MAX_EVENT_TYPE_KEY_SIZE {
+        event_type_key[j] = event_str_chars[j];
+    }
+
+    let mut params = DEFAULT_PARAMS;
+    for k in 0..MAX_NUM_PARAMS {
+        let param_start_idx = MAX_EVENT_TYPE_KEY_SIZE + (MAX_PARAM_KEY_SIZE + MAX_PARAM_VALUE_SIZE) * k;
+
+        for j in 0..MAX_PARAM_KEY_SIZE {
+            params[k].0[j] = event_str_chars[param_start_idx + j];
+        }
+
+        for j in 0..MAX_PARAM_VALUE_SIZE {
+            params[k].1[j] = event_str_chars[param_start_idx + MAX_PARAM_KEY_SIZE + j];
+        }
+    }
+
+
+    PersistenceEvent {
+        event_type_key: event_type_key,
+        params: params
+    }   
+} 
+
+pub fn split_into_event_strs(total_str: &str) -> Vec<&str> {
+
+    let indices_to_split_at : Vec<usize> = total_str.char_indices()
+        .map(|c| c.0)
+        .filter(|idx| idx % MAX_EVENT_SIZE == 0)
+        .collect();
+
+    let mut event_strs : Vec<&str> = vec![];
+    let remaining_str = total_str;
+
+    for idx in indices_to_split_at {
+        let (event_str, remaining_total_str) = remaining_str.split_at(idx);
+        event_strs.push(event_str);
+    }
+
+    event_strs
+}
+
 pub fn merge_all_strings(persistence_event: PersistenceEvent) -> [char; MAX_EVENT_SIZE] {
     let mut ret = [PAD_CHAR; MAX_EVENT_SIZE];
     let mut i = 0;
