@@ -57,6 +57,11 @@ pub fn split_into_event_strs(total_str: &str) -> Vec<&str> {
 
     for idx in indices_to_split_at {
         let (event_str, remaining_total_str) = remaining_str.split_at(idx);
+        
+        if event_str.len() == 0 {
+            break;
+        }
+
         event_strs.push(event_str);
     }
 

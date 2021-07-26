@@ -1,6 +1,7 @@
 use crate::domain::event::Event;
 use std::fs::File;
 use std::collections::HashMap;
+use std::fs::OpenOptions;
 
 pub mod event_repository_impl;
 mod event_repository_mapper;
@@ -20,7 +21,13 @@ mod event_repository_test {
 
     #[test]
     fn test_append_event_happy_path() {
-        let mut file = File::create("foo").unwrap();
+        let mut file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open("foo")
+            .unwrap();
+        
         let mut repo : EventRepositoryImpl = EventRepository::new(file); 
         let mut params : HashMap<String, String> = HashMap::new();
 
@@ -38,9 +45,9 @@ mod event_repository_test {
             Err(_e) => assert_eq!(true, false)
         };
 
-        match repo.get_events(10, 0) {
+        match repo.get_events(1, 0) {
             Ok(events) => assert_eq!(vec![expected_event], events),
-            Err(_e) => assert_eq!(true, false)
+            Err(e) => { println!("{}", e); panic!() }
         };
     }
 }

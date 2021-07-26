@@ -24,10 +24,13 @@ impl EventRepository for EventRepositoryImpl {
     fn get_events(&mut self, limit: usize, offset: usize) -> std::io::Result<Vec<Event>> {
         let ret : Vec<Event> = Vec::new();
 
+        // Add check for when limit is greater than the file contents
+
+
         let bytes_to_read : usize = MAX_EVENT_SIZE * limit * mem::size_of::<char>();
         let mut buffer = vec![0; bytes_to_read];
 
-        self.file.read_exact(&mut buffer)?;
+        self.file.read(&mut buffer)?;
 
         let mut total_str = str::from_utf8(&buffer).unwrap();
         
