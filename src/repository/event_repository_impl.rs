@@ -10,29 +10,34 @@ use std::mem;
 use std::str;
 
 pub struct EventRepositoryImpl {
-    file: File 
+    file_name: String
 }
 
 impl EventRepository for EventRepositoryImpl {
-    fn new(file: File) -> Self {
+    fn new(file_name: String) -> Self {
         
         EventRepositoryImpl {
-            file: file
+            file_name: file_name
         }
     }
 
-    fn get_events(&mut self, limit: usize, offset: usize) -> std::io::Result<Vec<Event>> {
+    fn get_events(&self, limit: usize, offset: usize) -> std::io::Result<Vec<Event>> {
         let ret : Vec<Event> = Vec::new();
 
-        // Add check for when limit is greater than the file contents
+        let chars_to_read : usize = MAX_EVENT_SIZE * limit; 
+        let mut buffer = vec![0; chars_to_read];
 
+        let file = OpenOptions::new()
+            .read(true)
+            .open(self.file_name.clone())
+            .unwrap();
 
-        let bytes_to_read : usize = MAX_EVENT_SIZE * limit * mem::size_of::<char>();
-        let mut buffer = vec![0; bytes_to_read];
+        let mut handle = file.take(chars_to_read as u64);
+        let amt_read = handle.read(&mut buffer)?;
 
-        self.file.read(&mut buffer)?;
+        buffer.resize(amt_read, 0);
 
-        let mut total_str = str::from_utf8(&buffer).unwrap();
+        let total_str = str::from_utf8(&buffer).unwrap();
         
         let domain_events : Vec<Event> = split_into_event_strs(total_str).iter()
             .map(|event_str| str_to_persistence_event(event_str))
@@ -49,6 +54,14 @@ impl EventRepository for EventRepositoryImpl {
         let total_str : String = total_char_arr.iter().collect();
         let bytes : &[u8] = total_str.as_bytes();
 
-        self.file.write_all(&bytes)
+        let mut file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(self.file_name.clone())
+            .unwrap();
+
+        file.write_all(bytes)?;
+        file.flush()
     }
 }
