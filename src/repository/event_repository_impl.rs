@@ -35,10 +35,14 @@ impl EventRepository for EventRepositoryImpl {
         let mut handle = file.take(chars_to_read as u64);
         let amt_read = handle.read(&mut buffer)?;
 
+        println!("{}", amt_read);
+
         buffer.resize(amt_read, 0);
 
         let total_str = str::from_utf8(&buffer).unwrap();
-        
+       
+        println!("{}", total_str);
+
         let domain_events : Vec<Event> = split_into_event_strs(total_str).iter()
             .map(|event_str| str_to_persistence_event(event_str))
             .map(|p_event| persistence_to_domain_event(p_event))
@@ -57,6 +61,7 @@ impl EventRepository for EventRepositoryImpl {
         let mut file = OpenOptions::new()
             .read(true)
             .write(true)
+            .append(true)
             .create(true)
             .open(self.file_name.clone())
             .unwrap();

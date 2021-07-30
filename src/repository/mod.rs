@@ -43,4 +43,62 @@ mod event_repository_test {
             Err(e) => { println!("{}", e); panic!() }
         };
     }
+
+    #[test]
+    fn test_get_events_with_offset() {
+        let mut repo : EventRepositoryImpl = EventRepository::new("foo2".to_string()); 
+        
+        let mut params1 : HashMap<String, String> = HashMap::new();
+        params1.insert("id".to_string(), "test123".to_string());
+        let mut params2 : HashMap<String, String> = HashMap::new();
+        params2.insert("id".to_string(), "test123".to_string());
+        let mut params3 : HashMap<String, String> = HashMap::new();
+        params3.insert("id".to_string(), "test123".to_string());
+        let mut params4 : HashMap<String, String> = HashMap::new();
+        params4.insert("id".to_string(), "test123".to_string());
+        let mut params5 : HashMap<String, String> = HashMap::new();
+        params5.insert("id".to_string(), "test123".to_string());
+        let mut params6 : HashMap<String, String> = HashMap::new();
+        params6.insert("id".to_string(), "test123".to_string());
+
+        let mut events = vec![
+            Event {
+                event_type_key: "event1".to_string(),
+                params: params1
+            },
+            Event {
+                event_type_key: "event2".to_string(),
+                params: params2
+            },
+            Event {
+                event_type_key: "event3".to_string(),
+                params: params3
+            },
+            Event {
+                event_type_key: "event4".to_string(),
+                params: params4
+            },
+            Event {
+                event_type_key: "event5".to_string(),
+                params: params5
+            },
+            Event {
+                event_type_key: "event6".to_string(),
+                params: params6
+            }
+        ];
+
+        for event in &events {
+            match repo.append_event(event.clone()) {
+                Ok(()) => (),
+                Err(_e) => assert_eq!(true, false)
+            };
+        }
+
+        match repo.get_events(10, 0) {
+            Ok(actual_events) => assert_eq!(events, actual_events),
+            Err(e) => { println!("{}", e); panic!() }
+        };
+    }
+
 }
