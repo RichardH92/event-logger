@@ -7,7 +7,7 @@ pub mod event_type_registry_impl;
 pub trait EventLog {
     fn clear_log(&mut self);
     fn get_events(&self) -> Vec<Event>;
-    fn log_events(&mut self, events: Vec<Event>);
+    fn log_event(&mut self, event: Event) -> Result<(), Vec<AppendEventValidationError>>;
 }
 
 pub trait EventTypeRegistry {
@@ -15,6 +15,22 @@ pub trait EventTypeRegistry {
     fn register_event_types(&mut self, event_types: Vec<EventType>) -> Result<(), Vec<RegisterEventTypeValidationError>>; 
     fn get_registered_event_types(&self) -> Vec<EventType>;
     fn has_event_type_key_been_registered(&self, key: &String) -> bool;
+}
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+pub struct AppendEventValidationError {
+    error_type: AppendEventValidationErrorType,
+    value: String
+}
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+pub enum AppendEventValidationErrorType {
+    EventKeyExceedsMaxLength,
+    ParamKeyExceedsMaxLength,
+    ParamValExceedsMaxLength,
+    NumParamsGreaterThanMax
 }
 
 #[derive(Debug)]
