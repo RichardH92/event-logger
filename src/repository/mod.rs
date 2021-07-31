@@ -1,7 +1,4 @@
 use crate::domain::event::Event;
-use std::fs::File;
-use std::collections::HashMap;
-use std::fs::OpenOptions;
 
 pub mod event_repository_impl;
 mod event_repository_mapper;
@@ -17,7 +14,8 @@ pub trait EventRepository {
 mod event_repository_test { 
     use super::*;
     use crate::repository::event_repository_impl::EventRepositoryImpl;
-
+    use std::collections::HashMap;
+    
     #[test]
     fn test_append_event_happy_path() {
         let mut repo : EventRepositoryImpl = EventRepository::new("foo".to_string()); 
@@ -60,7 +58,7 @@ mod event_repository_test {
         let mut params6 : HashMap<String, String> = HashMap::new();
         params6.insert("id".to_string(), "test123".to_string());
 
-        let mut events = vec![
+        let events = vec![
             Event {
                 event_type_key: "event1".to_string(),
                 params: params1

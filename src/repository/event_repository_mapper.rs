@@ -1,12 +1,10 @@
 use crate::domain::event::Event;
 use crate::repository::persistence_event::PersistenceEvent;
-use crate::constants::{EventTypeKey, Param, Params};
 use std::collections::HashMap;
 use crate::constants::{
     PAD_CHAR, 
     MAX_PARAM_VALUE_SIZE, 
     MAX_PARAM_KEY_SIZE, 
-    PARAM_VALUE_PAIR_SIZE, 
     MAX_EVENT_SIZE, 
     DEFAULT_EVENT_TYPE_KEY, 
     DEFAULT_PARAM, 
@@ -124,7 +122,7 @@ pub fn domain_to_persistence_event(event: Event) -> PersistenceEvent {
 
 fn strip_padding(mut padded_string: String) -> String {
     let char_vec : Vec<char> = padded_string.chars().collect();
-    for i in 0..padded_string.len() {
+    for _i in 0..padded_string.len() {
 
         if char_vec[padded_string.len() - 1] == PAD_CHAR {
             padded_string.pop();
@@ -282,11 +280,6 @@ mod repo_mapper_test {
     fn test_persistence_to_domain_happy_path() {
         let mut params : HashMap<String, String> = HashMap::new();
         params.insert("id".to_string(), "test123".to_string());
-
-        let event = Event {
-            event_type_key: "upsert-entity".to_string(),
-            params: params
-        };
 
         let mut p_params = DEFAULT_PARAMS;
         p_params[0].0[0] = 'i';
