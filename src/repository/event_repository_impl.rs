@@ -2,6 +2,7 @@ use crate::domain::event::Event;
 use crate::repository::EventRepository;
 use std::fs::OpenOptions;
 use std::fs::File;
+use std::io::SeekFrom;
 use crate::repository::event_repository_mapper::{merge_all_strings, domain_to_persistence_event, split_into_event_strs};
 use crate::repository::event_repository_mapper::{persistence_to_domain_event, str_to_persistence_event};
 use std::io::prelude::*;
@@ -24,24 +25,22 @@ impl EventRepository for EventRepositoryImpl {
     fn get_events(&self, limit: usize, offset: usize) -> std::io::Result<Vec<Event>> {
         let ret : Vec<Event> = Vec::new();
 
+        let chars_to_offset : usize = MAX_EVENT_SIZE * offset;
         let chars_to_read : usize = MAX_EVENT_SIZE * limit; 
         let mut buffer = vec![0; chars_to_read];
 
-        let file = OpenOptions::new()
+        let mut file = OpenOptions::new()
             .read(true)
             .open(self.file_name.clone())
             .unwrap();
 
+        file.seek(SeekFrom::Start(chars_to_offset as u64))?;
+
         let mut handle = file.take(chars_to_read as u64);
         let amt_read = handle.read(&mut buffer)?;
 
-        println!("{}", amt_read);
-
         buffer.resize(amt_read, 0);
-
         let total_str = str::from_utf8(&buffer).unwrap();
-       
-        println!("{}", total_str);
 
         let domain_events : Vec<Event> = split_into_event_strs(total_str).iter()
             .map(|event_str| str_to_persistence_event(event_str))

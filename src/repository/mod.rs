@@ -10,7 +10,6 @@ mod persistence_event;
 pub trait EventRepository {
     fn new(file_name: String) -> Self;
     fn append_event(&mut self, event: Event) -> std::io::Result<()>; 
-    //fn get_event(idx: usize) -> Result<Event, ()>;
     fn get_events(&self, limit: usize, offset: usize) -> std::io::Result<Vec<Event>>;
 }
 
@@ -45,7 +44,7 @@ mod event_repository_test {
     }
 
     #[test]
-    fn test_get_events_with_offset() {
+    fn test_get_events_happy_path() {
         let mut repo : EventRepositoryImpl = EventRepository::new("foo2".to_string()); 
         
         let mut params1 : HashMap<String, String> = HashMap::new();
@@ -95,8 +94,10 @@ mod event_repository_test {
             };
         }
 
-        match repo.get_events(10, 0) {
-            Ok(actual_events) => assert_eq!(events, actual_events),
+        let expected_events = vec![events[2].clone(), events[3].clone(), events[4].clone(), events[5].clone()];
+
+        match repo.get_events(10, 2) {
+            Ok(actual_events) => assert_eq!(expected_events, actual_events),
             Err(e) => { println!("{}", e); panic!() }
         };
     }
