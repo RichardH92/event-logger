@@ -15,6 +15,7 @@ mod event_repository_test {
     use super::*;
     use crate::repository::event_repository_impl::EventRepositoryImpl;
     use std::collections::HashMap;
+    use std::fs;
     
     #[test]
     fn test_append_event_happy_path() {
@@ -39,6 +40,8 @@ mod event_repository_test {
             Ok(events) => assert_eq!(vec![expected_event], events),
             Err(e) => { println!("{}", e); panic!() }
         };
+
+        fs::remove_file("foo");
     }
 
     #[test]
@@ -98,6 +101,9 @@ mod event_repository_test {
             Ok(actual_events) => assert_eq!(expected_events, actual_events),
             Err(e) => { println!("{}", e); panic!() }
         };
+    
+
+        fs::remove_file("foo2");
     }
 
 }
