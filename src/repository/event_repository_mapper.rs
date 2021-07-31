@@ -1,19 +1,19 @@
 use crate::domain::event::Event;
 use crate::repository::persistence_event::PersistenceEvent;
-use crate::domain::MAX_PARAM_KEY_SIZE;
-use crate::domain::MAX_PARAM_VALUE_SIZE;
-use crate::domain::MAX_EVENT_TYPE_KEY_SIZE;
-use crate::domain::MAX_NUM_PARAMS;
-use crate::repository::persistence_event::{EventTypeKey, Param, Params};
+use crate::constants::{EventTypeKey, Param, Params};
 use std::collections::HashMap;
-
-pub const PAD_CHAR : char = '*';
-pub const PARAM_VALUE_PAIR_SIZE: usize = MAX_PARAM_KEY_SIZE + MAX_PARAM_VALUE_SIZE;
-pub const MAX_EVENT_SIZE: usize = MAX_EVENT_TYPE_KEY_SIZE + (PARAM_VALUE_PAIR_SIZE) * MAX_NUM_PARAMS;
-
-pub const DEFAULT_EVENT_TYPE_KEY : EventTypeKey = [PAD_CHAR; MAX_EVENT_TYPE_KEY_SIZE];
-pub const DEFAULT_PARAM : Param = ([PAD_CHAR; MAX_PARAM_KEY_SIZE], [PAD_CHAR; MAX_PARAM_VALUE_SIZE]);
-pub const DEFAULT_PARAMS : Params = [DEFAULT_PARAM; MAX_NUM_PARAMS];
+use crate::constants::{
+    PAD_CHAR, 
+    MAX_PARAM_VALUE_SIZE, 
+    MAX_PARAM_KEY_SIZE, 
+    PARAM_VALUE_PAIR_SIZE, 
+    MAX_EVENT_SIZE, 
+    DEFAULT_EVENT_TYPE_KEY, 
+    DEFAULT_PARAM, 
+    DEFAULT_PARAMS,
+    MAX_NUM_PARAMS,
+    MAX_EVENT_TYPE_KEY_SIZE
+};
 
 
 pub fn str_to_persistence_event(event_str: &str) -> PersistenceEvent {

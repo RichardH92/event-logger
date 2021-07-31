@@ -6,7 +6,7 @@ use std::io::SeekFrom;
 use crate::repository::event_repository_mapper::{merge_all_strings, domain_to_persistence_event, split_into_event_strs};
 use crate::repository::event_repository_mapper::{persistence_to_domain_event, str_to_persistence_event};
 use std::io::prelude::*;
-use crate::repository::event_repository_mapper::MAX_EVENT_SIZE;
+use crate::constants::{MAX_EVENT_SIZE};
 use std::mem;
 use std::str;
 
