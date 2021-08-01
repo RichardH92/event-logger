@@ -7,6 +7,7 @@ use crate::repository::event_repository_mapper::{persistence_to_domain_event, st
 use std::io::prelude::*;
 use crate::constants::{MAX_EVENT_SIZE};
 use std::str;
+use std::fs;
 
 pub struct EventRepositoryImpl {
     file_name: String
@@ -18,6 +19,10 @@ impl EventRepository for EventRepositoryImpl {
         EventRepositoryImpl {
             file_name: file_name
         }
+    }
+
+    fn clear_log(&self) -> std::io::Result<()> {
+        fs::remove_file(self.file_name.clone())
     }
 
     fn get_events(&self, limit: usize, offset: usize) -> std::io::Result<Vec<Event>> {

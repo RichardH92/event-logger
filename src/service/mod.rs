@@ -8,7 +8,7 @@ pub mod event_type_registry_impl;
 pub mod event_validator;
 
 pub trait EventLog {
-    fn clear_log(&mut self);
+    fn clear_log(&self) -> std::io::Result<()>;
     fn get_events(&self) -> Vec<Event>;
     fn log_event(&mut self, event: Event) -> Result<(), Box<dyn error::Error>>;
 }

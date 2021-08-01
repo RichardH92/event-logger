@@ -10,8 +10,8 @@ pub struct EventLogImpl {
 }
 
 impl EventLog for EventLogImpl {
-    fn clear_log(&mut self) {
-
+    fn clear_log(&self) -> std::io::Result<()> {
+        self.repo.clear_log()
     }
 
     fn get_events(&self) -> Vec<Event> {

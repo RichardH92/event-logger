@@ -8,6 +8,7 @@ pub trait EventRepository {
     fn new(file_name: String) -> Self;
     fn append_event(&mut self, event: Event) -> std::io::Result<()>; 
     fn get_events(&self, limit: usize, offset: usize) -> std::io::Result<Vec<Event>>;
+    fn clear_log(&self) -> std::io::Result<()>;
 }
 
 #[cfg(test)]
@@ -16,7 +17,9 @@ mod event_repository_test {
     use crate::repository::event_repository_impl::EventRepositoryImpl;
     use std::collections::HashMap;
     use std::fs;
-    
+
+    // TODO: Add test for key with multi-byte character
+
     #[test]
     fn test_append_event_happy_path() {
         let mut repo : EventRepositoryImpl = EventRepository::new("foo".to_string()); 
@@ -41,7 +44,7 @@ mod event_repository_test {
             Err(e) => { println!("{}", e); panic!() }
         };
 
-        fs::remove_file("foo");
+        repo.clear_log();
     }
 
     #[test]
@@ -101,9 +104,8 @@ mod event_repository_test {
             Ok(actual_events) => assert_eq!(expected_events, actual_events),
             Err(e) => { println!("{}", e); panic!() }
         };
-    
 
-        fs::remove_file("foo2");
+        repo.clear_log();
     }
 
 }
