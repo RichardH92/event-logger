@@ -117,7 +117,9 @@ mod registry_tests {
         
         let result = registry.register_event_types(vec![e3, e4]);
    
-        let expected_errs = Err(vec![RegisterEventTypeValidationError{ event_type_key: "upsert-entity".to_string(), error_type: KeyAlreadyTaken }]);
+        let expected_errs = Err(RegisterEventTypeValidationErrors {
+            errors: vec![RegisterEventTypeValidationError{ event_type_key: "upsert-entity".to_string(), error_type: KeyAlreadyTaken }]
+        });
         assert_eq!(expected_errs, result);
    
         let registered_types = registry.get_registered_event_types();
@@ -131,7 +133,9 @@ mod registry_tests {
         let e2 = EventType { key: "upsert-entity".to_string(), allowed_params: vec![], inverse_type: None };
         
         let result = registry.register_event_types(vec![e1, e2]);
-        let expected_errs = Err(vec![RegisterEventTypeValidationError{ event_type_key: "upsert-entity".to_string(), error_type: DuplicateKey }]);
+        let expected_errs = Err(RegisterEventTypeValidationErrors {
+            errors: vec![RegisterEventTypeValidationError{ event_type_key: "upsert-entity".to_string(), error_type: DuplicateKey }]
+        });
 
         assert_eq!(expected_errs, result);
     }
