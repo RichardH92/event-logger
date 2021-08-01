@@ -24,7 +24,7 @@ pub trait EventTypeRegistry {
 #[derive(PartialEq)]
 pub struct AppendEventValidationError {
     error_type: AppendEventValidationErrorType,
-    value: String
+    value: Option<String>
 }
 
 #[derive(Debug)]
