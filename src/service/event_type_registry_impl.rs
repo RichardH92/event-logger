@@ -1,4 +1,4 @@
-use crate::service::RegisterEventTypeValidationError;
+use crate::service::{RegisterEventTypeValidationError, RegisterEventTypeValidationErrors};
 use crate::service::RegisterEventTypeValidationErrorType::{DuplicateKey, KeyAlreadyTaken};
 use crate::domain::event_type::EventType;
 use crate::service::EventTypeRegistry;
@@ -14,7 +14,7 @@ impl EventTypeRegistry for EventTypeRegistryImpl {
         }
     }
 
-    fn register_event_types(&mut self, mut event_types: Vec<EventType>) -> Result<(), Vec<RegisterEventTypeValidationError>> {
+    fn register_event_types(&mut self, mut event_types: Vec<EventType>) -> Result<(), RegisterEventTypeValidationErrors> {
 
         let mut errors : Vec<RegisterEventTypeValidationError> = vec![];
 
@@ -41,7 +41,7 @@ impl EventTypeRegistry for EventTypeRegistryImpl {
             return Ok(());
         }
 
-        Err(errors)
+        Err(RegisterEventTypeValidationErrors { errors })
     }
 
     fn get_registered_event_types(&self) -> Vec<EventType> {

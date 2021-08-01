@@ -1,9 +1,12 @@
 use crate::repository::event_repository_impl::EventRepositoryImpl;
-use crate::service::{EventLog, AppendEventValidationError, AppendEventValidationErrorType};
+use crate::repository::EventRepository;
+use crate::service::{EventLog, AppendEventValidationErrors, AppendEventValidationError, AppendEventValidationErrorType};
+use crate::service::event_validator::validate_event;
 use crate::domain::event::Event;
+use std::error;
 
 pub struct EventLogImpl {
-   repo: EventRepositoryImpl 
+   repo: EventRepositoryImpl,
 }
 
 impl EventLog for EventLogImpl {
@@ -15,7 +18,10 @@ impl EventLog for EventLogImpl {
         vec![]
     }
 
-    fn log_event(&mut self, event: Event) -> Result<(), Vec<AppendEventValidationError>> {
+    fn log_event(&mut self, event: Event) -> Result<(), Box<dyn error::Error>> {
+        validate_event(&event)?;
+        self.repo.append_event(event)?;
+    
         Ok(())
     }
 }

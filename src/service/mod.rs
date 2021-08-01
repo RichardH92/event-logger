@@ -1,18 +1,21 @@
 use crate::domain::event::Event;
 use crate::domain::event_type::EventType;
+use std::error;
+use std::fmt;
 
 pub mod event_log_impl;
 pub mod event_type_registry_impl;
+pub mod event_validator;
 
 pub trait EventLog {
     fn clear_log(&mut self);
     fn get_events(&self) -> Vec<Event>;
-    fn log_event(&mut self, event: Event) -> Result<(), Vec<AppendEventValidationError>>;
+    fn log_event(&mut self, event: Event) -> Result<(), Box<dyn error::Error>>;
 }
 
 pub trait EventTypeRegistry {
     fn new() -> Self;
-    fn register_event_types(&mut self, event_types: Vec<EventType>) -> Result<(), Vec<RegisterEventTypeValidationError>>; 
+    fn register_event_types(&mut self, event_types: Vec<EventType>) -> Result<(), RegisterEventTypeValidationErrors>; 
     fn get_registered_event_types(&self) -> Vec<EventType>;
     fn has_event_type_key_been_registered(&self, key: &String) -> bool;
 }
@@ -22,6 +25,20 @@ pub trait EventTypeRegistry {
 pub struct AppendEventValidationError {
     error_type: AppendEventValidationErrorType,
     value: String
+}
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+pub struct AppendEventValidationErrors {
+    errors: Vec<AppendEventValidationError>
+}
+
+impl error::Error for AppendEventValidationErrors {}
+
+impl fmt::Display for AppendEventValidationErrors {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Invalid event")
+    }
 }
 
 #[derive(Debug)]
@@ -38,6 +55,20 @@ pub enum AppendEventValidationErrorType {
 pub struct RegisterEventTypeValidationError {
     error_type: RegisterEventTypeValidationErrorType,
     event_type_key: String
+}
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+pub struct RegisterEventTypeValidationErrors {
+    errors: Vec<RegisterEventTypeValidationError>
+}
+
+impl error::Error for RegisterEventTypeValidationErrors {}
+
+impl fmt::Display for RegisterEventTypeValidationErrors {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Invalid event type")
+    }
 }
 
 #[derive(Debug)]
