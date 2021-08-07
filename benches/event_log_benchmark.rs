@@ -17,6 +17,13 @@ fn setup() {
         //let e1 = EventType { key: "upsert-entity".to_string(), allowed_params: vec!["id".to_string()], inverse_type: None };
 }
 
+fn teardown() {
+    unsafe {
+        let log = event_log.as_mut().unwrap();
+        log.clear_log(); 
+    }
+}
+
 fn benchmark_append_event(c: &mut Criterion) {
     setup();
 
@@ -24,6 +31,8 @@ fn benchmark_append_event(c: &mut Criterion) {
         let log = event_log.as_mut().unwrap();
         c.bench_function("append event", |b| b.iter(|| execute_append_event(log)));
     }
+
+    teardown();
 }
 
 fn execute_append_event(log: &mut EventLogImpl) {
