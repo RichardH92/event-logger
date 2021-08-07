@@ -10,12 +10,18 @@ pub struct EventLogImpl {
 }
 
 impl EventLog for EventLogImpl {
+    fn new(repo: EventRepositoryImpl) -> Self {
+        EventLogImpl {
+            repo
+        }
+    }
+
     fn clear_log(&self) -> std::io::Result<()> {
         self.repo.clear_log()
     }
 
-    fn get_events(&self) -> Vec<Event> {
-        vec![]
+    fn get_events(&self, limit: usize, offset: usize) -> std::io::Result<Vec<Event>> {
+        self.repo.get_events(limit, offset)
     }
 
     fn log_event(&mut self, event: Event) -> Result<(), Box<dyn error::Error>> {

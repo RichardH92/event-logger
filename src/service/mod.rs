@@ -1,5 +1,6 @@
 use crate::domain::event::Event;
 use crate::domain::event_type::EventType;
+use crate::repository::event_repository_impl::EventRepositoryImpl;
 use std::error;
 use std::fmt;
 
@@ -8,8 +9,9 @@ pub mod event_type_registry_impl;
 pub mod event_validator;
 
 pub trait EventLog {
+    fn new(repo: EventRepositoryImpl) -> Self;
     fn clear_log(&self) -> std::io::Result<()>;
-    fn get_events(&self) -> Vec<Event>;
+    fn get_events(&self, limit: usize, offset: usize) -> std::io::Result<Vec<Event>>;
     fn log_event(&mut self, event: Event) -> Result<(), Box<dyn error::Error>>;
 }
 
@@ -24,7 +26,7 @@ pub trait EventTypeRegistry {
 #[derive(PartialEq)]
 pub struct AppendEventValidationError {
     error_type: AppendEventValidationErrorType,
-    value: String
+    value: Option<String>
 }
 
 #[derive(Debug)]
